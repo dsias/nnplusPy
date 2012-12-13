@@ -54,7 +54,6 @@ def get_settings(req_settings):
     except IOError:
         return
 
-    print _settings_dict
     return _settings_dict
 
 
