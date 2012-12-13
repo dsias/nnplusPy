@@ -5,14 +5,21 @@
 
 
 import MySQLdb
-import re
+
+from nnpluspy.nnplus_config import get_settings
 
 
 class DBConnection():
-    def __init__(self, db_password, db_user, db_name):
-        self.con = MySQLdb.connect(user=db_user,
-                                   passwd=db_password,
-                                   db=db_name)
+    def __init__(self, db_password, db_user, db_name, host='archsrv'):
+        if host:
+            self.con = MySQLdb.connect(user=db_user,
+                                       passwd=db_password,
+                                       db=db_name,
+                                       host=host)
+        else:
+            self.con = MySQLdb.connect(user=db_user,
+                                       passwd=db_password,
+                                       db=db_name)
 
         self.cur = self.con.cursor()
 
@@ -26,9 +33,9 @@ class DBConnection():
         return self.cur
 
     def select(self, query, args=None):
-        sql_result = self.action(query, args)
+        self.cur.execute(query, args)
 
-        return sql_result.fetchall()
+        return self.cur.fetchall()
 
     def update(self, table, value_dict, key_dict):
         gen_params = lambda myDict: [x + "=%s" for x in myDict.keys()]
@@ -40,28 +47,8 @@ class DBConnection():
 
 
 def connect():
-    "Reads config.php and returns a db connection instance."
-    setting_rgx = re.compile(r"^define\('([(A-Z_]+)', '(.*)'\);")
-    settings_dict = {
-        'DB_USER': None,
-        'DB_PASSWORD': None,
-        'DB_NAME': None
-    }
 
-    try:
-        with open('/srv/http/nnplus/www/config.php', 'r') as f:
-
-                for l in f.readlines():
-                    setting_line = re.match(setting_rgx, l)
-                    if setting_line:
-                        setting, value = setting_line.groups()
-                        if setting in settings_dict:
-                            del settings_dict[setting]
-                            settings_dict[setting.lower()] = value
-    except IOError, e:
-        print e
-        return 1
-
-    db = DBConnection(**settings_dict)
+    db = DBConnection(**get_settings(['DB_PASSWORD', 'DB_USER', 'DB_NAME']))
 
     return db
+
