@@ -40,7 +40,7 @@ settings_dict = {
 }
 
 
-def get_settings(req_settings):
+def get_config_php(req_settings):
     """ retrieves the settings set in www/config.php """
     _settings_dict = {}
     try:
@@ -55,7 +55,3 @@ def get_settings(req_settings):
         return
 
     return _settings_dict
-
-
-def set_setting(setting_dict):
-    pass

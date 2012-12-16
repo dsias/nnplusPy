@@ -59,13 +59,12 @@ class Release(object):
                 os.path.join(audio_dir, self.rid[0], self.rid + '.mp3')
             ]
 
-        logging.debug(files)
+        logging.debug("Removing nzb/cover/audio preview..")
         for f in files:
-            logging.debug("Removing: {file}".format(file=f))
             try:
                 os.remove(f)
-            except OSError, e:
-                logging.debug(e)
+            except OSError:
+                pass
 
 
 def delete_releases(releases):
@@ -97,12 +96,17 @@ def delete_releases(releases):
     cur.close()
 
 
-def get_releases_strict(in_dict, and_dict=None):
+def get_releases_strict(in_dict, negate=False, and_dict=None):
     cur = db.connect()
     gen_keys = lambda myDict: [x + "=?" for x in myDict.keys()]
-    query = "SELECT * FROM releases WHERE {in_query} IN({restrict})".format(
+    negate = 'IN'
+    if negate:
+        notin = 'NOT ' + negate
+
+    query = "SELECT * FROM releases WHERE {in_query} {notin}({restrict})".format(
             in_query=in_dict.keys()[0],
-            restrict=str(in_dict.values()[0].strip('[]')))
+            notin=notin,
+            restrict=str(in_dict.values()[0]).strip('[]'))
 
     if and_dict:
         query += " AND " + " AND ".join(gen_keys(and_dict))

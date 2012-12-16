@@ -40,10 +40,13 @@ class DBConnection():
 
         return self.cur
 
-    def select(self, query, args=None):
+    def select(self, query, args=None, unpack=False):
         logging.debug(query)
         self.cur.execute(query, args)
         sqlResult = self.cur.fetchall()
+
+        if unpack:
+            sqlResult = [x[0] for x in sqlResult]
 
         # Unpack results
         return sqlResult
