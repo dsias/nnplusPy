@@ -14,7 +14,7 @@ WWW_DIR = '/srv/http/nnplus/www'
 logger = logging.getLogger('nnpluspy')
 logger.setLevel(logging.DEBUG)
 frmt = logging.Formatter(
-    '[%(asctime)s] %(module)-8s %(levelname)s :: %(message)s', '%H:%M:%S'
+    '[%(asctime)s] %(levelname)s %(module)-8s:: %(message)s', '%H:%M:%S'
 )
 fh = logging.FileHandler('nnpluspy.log', 'w')
 fh.setLevel(logging.DEBUG)
@@ -38,7 +38,5 @@ class Struct(object):
                     setattr(self, s[SETTING], s[VALUE])
         except IOError, e:
             logging.ERROR(e)
-
-        self.DB_HOST = 'archsrv'
 
 config = Struct()
